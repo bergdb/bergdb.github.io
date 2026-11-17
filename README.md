@@ -16,6 +16,13 @@ Files
   no JavaScript, no external fonts or scripts, no cookies, no analytics.
 * `404.html`: the page for an address that does not exist. Its `<style>`
   block is a copy of `index.html`'s.
+* `logo.svg`, `logo-dark.svg`: the BergDB logo of 2013, the purple dot and
+  "BergDB" in Courier 10 Pitch Bold, as on bergdb.com and the GitHub
+  organisation's avatar. Vector copies made from bergdb.com's
+  `logo-200.png` (2014) and the font's outlines; `logo-dark.svg` has
+  light letters for dark mode.
+* `favicon.svg`, `favicon.ico`, `apple-touch-icon.png`: the purple dot,
+  as bergdb.com's favicon.
 * `CNAME`: the custom domain, one line. GitHub Pages reads it; do not
   remove it.
 * `.nojekyll`: empty. It tells GitHub Pages to serve the files as they
