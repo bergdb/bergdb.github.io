@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BergDB: an embedded, append-only database for Java</title>
+<meta name="description" content="BergDB is an embedded, append-only key-value database for Java. It keeps every transaction in one stream of files and can read the database as it was at an earlier time. A preview, not for production.">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%231b5a86'/%3E%3Crect x='2.5' y='6' width='3' height='4' fill='%23fff' opacity='.55'/%3E%3Crect x='6.5' y='6' width='3' height='4' fill='%23fff' opacity='.8'/%3E%3Crect x='10.5' y='6' width='3' height='4' fill='%23fff'/%3E%3C/svg%3E">
+<style>
+/* Layout: one left-aligned column of about 70 characters, centred on a wide
+   screen. The preview note is the only boxed text; code scrolls in its own box. */
+:root {
+  --bg: #fbfcfd;
+  --fg: #18212d;
+  --muted: #4f5b6b;
+  --accent: #1b5a86;
+  --rule: #d9e0e8;
+  --surface: #f0f3f7;
+  --note-bg: #fff5d6;
+  --note-edge: #b98a12;
+  --note-fg: #3a2e06;
+  --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #11151b;
+    --fg: #e3e8ee;
+    --muted: #9ca8b6;
+    --accent: #86bde6;
+    --rule: #2b3440;
+    --surface: #1a2029;
+    --note-bg: #2a2410;
+    --note-edge: #a8821f;
+    --note-fg: #f1e3b4;
+  }
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html {
+  background: var(--bg);
+  color-scheme: light dark;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+body {
+  margin: 0 auto;
+  max-width: 42rem;
+  padding-block: 3rem 2rem;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--sans);
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  overflow-wrap: break-word;
+}
+
+h1, h2 { line-height: 1.2; text-wrap: balance; }
+h1 { margin: 0; font-size: 2.5rem; font-weight: 700; letter-spacing: -0.02em; }
+h2 { margin: 2.75rem 0 0.5rem; font-size: 1.3rem; font-weight: 650; }
+p { margin: 0.75rem 0; }
+ul { margin: 0.75rem 0; padding-left: 1.25rem; }
+li { margin: 0.4rem 0; }
+
+a { color: var(--accent); text-decoration: underline; text-underline-offset: 0.15em; }
+a:hover { text-decoration-thickness: 2px; }
+a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 2px; }
+
+code, pre { font-family: var(--mono); }
+code { font-size: 0.9em; overflow-wrap: anywhere; }
+pre {
+  margin: 1rem 0;
+  padding: 0.9rem 1rem;
+  overflow-x: auto;
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  font-size: 0.8125rem;
+  line-height: 1.55;
+  tab-size: 4;
+}
+pre code { font-size: inherit; overflow-wrap: normal; }
+
+header { margin-bottom: 1.75rem; }
+.nb { white-space: nowrap; }
+.tagline { margin: 0.5rem 0 0; color: var(--muted); font-size: 1.2rem; line-height: 1.4; }
+.stream { display: block; width: 100%; max-width: 17.5rem; height: 0.625rem; margin-top: 1.25rem; }
+.stream .cut { fill: none; stroke: var(--rule); }
+.stream .rec { fill: var(--muted); opacity: 0.45; }
+.stream .tail { fill: var(--accent); }
+
+.note {
+  margin: 1.5rem 0;
+  padding: 0.75rem 1rem;
+  background: var(--note-bg);
+  border: 1px solid var(--note-edge);
+  border-radius: 4px;
+  color: var(--note-fg);
+}
+.note a { color: inherit; }
+
+.ideas { display: grid; grid-template-columns: 10.5rem 1fr; gap: 0.9rem 1.25rem; margin: 1rem 0; }
+.ideas dt { font-weight: 650; }
+.ideas dd { margin: 0; min-width: 0; }
+@media (max-width: 36rem) {
+  h1 { font-size: 2.1rem; }
+  .ideas { grid-template-columns: 1fr; gap: 0.1rem; }
+  .ideas dd { margin-bottom: 0.8rem; }
+}
+
+footer {
+  margin-top: 3.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--rule);
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+footer p { margin: 0.4rem 0; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>BergDB</h1>
+  <p class="tagline">An embedded, append-only key-value database for Java.</p>
+  <svg class="stream" viewBox="0 0 280 10" aria-hidden="true">
+    <rect class="cut" x="0.5" y="0.5" width="21" height="9"/>
+    <rect class="cut" x="26.5" y="0.5" width="13" height="9"/>
+    <rect class="rec" x="44" y="0" width="30" height="10"/>
+    <rect class="rec" x="78" y="0" width="12" height="10"/>
+    <rect class="rec" x="94" y="0" width="22" height="10"/>
+    <rect class="rec" x="120" y="0" width="38" height="10"/>
+    <rect class="rec" x="162" y="0" width="14" height="10"/>
+    <rect class="rec" x="180" y="0" width="26" height="10"/>
+    <rect class="rec" x="210" y="0" width="18" height="10"/>
+    <rect class="tail" x="232" y="0" width="34" height="10"/>
+    <rect class="tail" x="270" y="0" width="10" height="10"/>
+  </svg>
+</header>
+
+<main>
+  <p>BergDB runs inside your Java process, keeps every transaction in one
+  append-only stream of files, and lets you read the database as it was at
+  an earlier time.</p>
+
+  <p class="note"><strong>BergDB is a preview. Do not use it in
+  production.</strong> There is no promise about the stream format or the
+  API until a stable release. See <a href="#status">the status</a>.</p>
+
+  <section id="ideas" aria-labelledby="ideas-h">
+    <h2 id="ideas-h">Main ideas</h2>
+    <dl class="ideas">
+      <dt>One stream</dt>
+      <dd>The stream is the only durable storage: no write-ahead log and no
+      separate index files. Data, index and history are all records in the
+      stream.</dd>
+      <dt>Self-indexed</dt>
+      <dd>Index nodes are written into the stream lazily, as the writes go
+      on. A start reads only the tail of the stream, so the time to open a
+      database does not grow with its size.</dd>
+      <dt>History</dt>
+      <dd>A read can be made at any time that is still kept, and sees the
+      database as it was then, its indexes included.</dd>
+      <dt>Larger than memory</dt>
+      <dd>Eviction keeps the database within a memory budget, and reclaim
+      cuts the front of the stream when a finite retention allows it.</dd>
+      <dt>Small</dt>
+      <dd>One jar with no dependencies beyond the JDK. No server, few
+      settings.</dd>
+    </dl>
+    <p>The Core is a key-value store of byte arrays. The Pub API on top of
+    it stores strings, byte arrays and objects under path-like keys, with
+    secondary indexes.</p>
+  </section>
+
+  <section id="status" aria-labelledby="status-h">
+    <h2 id="status-h">Status: a preview</h2>
+    <p>BergDB is a preview. Do not use it in production.</p>
+    <ul>
+      <li>There is no promise about the stream format or the API until a
+      stable release. A database made by one release may not open in the
+      next: release 2026.5 refuses the databases of 2026.4 and earlier.
+      There is no upgrade tool; read the data with the old release and put
+      it with the new one.</li>
+      <li>The latest release is 2026.5, of <span class="nb">2026-11-13</span>. The
+      <code>main</code> branch moves ahead of it.</li>
+      <li>It is tested on JDK 17 and 27, on macOS and Linux, and on an
+      Android emulator, not on a phone.</li>
+      <li>There is no replication and no encryption. The README in
+      <a href="https://github.com/bergdb/bergdb">the repository</a> lists
+      the known issues and limits that a user meets first; the release's
+      notes have the full list.</li>
+    </ul>
+  </section>
+
+  <section id="get" aria-labelledby="get-h">
+    <h2 id="get-h">Get it</h2>
+    <ul>
+      <li><strong>The latest release.</strong> Each release's jar and the
+      Javadoc of its API are on
+      <a href="https://github.com/bergdb/bergdb/releases">GitHub Releases</a>,
+      under the release's tag. The latest is <code>release-2026.5</code>.</li>
+      <li><strong>The source.</strong>
+      <a href="https://github.com/bergdb/bergdb">github.com/bergdb/bergdb</a>.
+      With a JDK 17 or later and a Unix shell (macOS or Linux),
+      <code>java/build.sh</code> builds the jar,
+      <code>java/build/bergdb-release.jar</code>.</li>
+    </ul>
+  </section>
+
+  <section id="try" aria-labelledby="try-h">
+    <h2 id="try-h">Try it</h2>
+    <p>You need a JDK 17 or later and the jar. A first program,
+    <code>Hello.java</code>:</p>
+<pre><code>import bergdb.pub.Connection;
+import bergdb.pub.Database;
+import bergdb.pub.Factory;
+import bergdb.pub.Time;
+
+public class Hello {
+    public static void main(String[] args) throws Exception {
+        try (Database db = Factory.database().create("hello-db").start()) {
+            Connection c = db.connection();
+            Time first = c.put("/fruit/apple", "red").getTime();
+            c.put("/fruit/apple", "green");
+
+            // prints green
+            System.out.println(c.get("/fruit/apple", String.class));
+
+            // read the past: prints red
+            c.setLookupTime(first);
+            System.out.println(c.get("/fruit/apple", String.class));
+
+            // wait until durable
+            c.sync();
+        }
+    }
+}</code></pre>
+    <p>Compile and run it with the release's jar beside it:</p>
+<pre><code>javac -cp bergdb-2026.5.jar Hello.java
+java -cp bergdb-2026.5.jar:. Hello</code></pre>
+    <p><code>create</code> makes a new database in a new or empty
+    directory; <code>open</code> opens an existing one. The API is the
+    packages <code>bergdb.pub</code> and <code>bergdb.pub.util</code>. The
+    README in <a href="https://github.com/bergdb/bergdb">the repository</a>
+    says what a running database needs and where more examples are.</p>
+  </section>
+
+  <section id="links" aria-labelledby="links-h">
+    <h2 id="links-h">Links</h2>
+    <ul>
+      <li><a href="https://github.com/bergdb/bergdb">Repository</a>: the
+      source, the README and the design documents.</li>
+      <li><a href="https://github.com/bergdb/bergdb/releases">Releases</a>:
+      each release's jar and Javadoc.</li>
+      <li><a href="https://github.com/bergdb/bergdb/issues">Issues</a>: bug
+      reports and ideas are welcome.</li>
+      <li><a href="https://github.com/bergdb/bergdb/blob/main/SECURITY.md">Security</a>:
+      how to report a vulnerability. Do not open a public issue for it.</li>
+      <li><a href="https://github.com/bergdb/bergdb/blob/main/LICENSE">Licence</a>:
+      the Apache License, Version 2.0.</li>
+    </ul>
+  </section>
+</main>
+
+<footer>
+  <p>© 2013–2026 Frans Lundberg. Licensed under the
+  <a href="https://github.com/bergdb/bergdb/blob/main/LICENSE">Apache License, Version 2.0</a>.</p>
+  <p>“BergDB” is Frans Lundberg's name for this software.</p>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Page not found: BergDB</title>
+<meta name="description" content="There is no page at this address on bergdb.org.">
+<meta name="robots" content="noindex">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%231b5a86'/%3E%3Crect x='2.5' y='6' width='3' height='4' fill='%23fff' opacity='.55'/%3E%3Crect x='6.5' y='6' width='3' height='4' fill='%23fff' opacity='.8'/%3E%3Crect x='10.5' y='6' width='3' height='4' fill='%23fff'/%3E%3C/svg%3E">
+<style>
+/* Layout: one left-aligned column of about 70 characters, centred on a wide
+   screen. The preview note is the only boxed text; code scrolls in its own box. */
+:root {
+  --bg: #fbfcfd;
+  --fg: #18212d;
+  --muted: #4f5b6b;
+  --accent: #1b5a86;
+  --rule: #d9e0e8;
+  --surface: #f0f3f7;
+  --note-bg: #fff5d6;
+  --note-edge: #b98a12;
+  --note-fg: #3a2e06;
+  --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #11151b;
+    --fg: #e3e8ee;
+    --muted: #9ca8b6;
+    --accent: #86bde6;
+    --rule: #2b3440;
+    --surface: #1a2029;
+    --note-bg: #2a2410;
+    --note-edge: #a8821f;
+    --note-fg: #f1e3b4;
+  }
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html {
+  background: var(--bg);
+  color-scheme: light dark;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+body {
+  margin: 0 auto;
+  max-width: 42rem;
+  padding-block: 3rem 2rem;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--sans);
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  overflow-wrap: break-word;
+}
+
+h1, h2 { line-height: 1.2; text-wrap: balance; }
+h1 { margin: 0; font-size: 2.5rem; font-weight: 700; letter-spacing: -0.02em; }
+h2 { margin: 2.75rem 0 0.5rem; font-size: 1.3rem; font-weight: 650; }
+p { margin: 0.75rem 0; }
+ul { margin: 0.75rem 0; padding-left: 1.25rem; }
+li { margin: 0.4rem 0; }
+
+a { color: var(--accent); text-decoration: underline; text-underline-offset: 0.15em; }
+a:hover { text-decoration-thickness: 2px; }
+a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 2px; }
+
+code, pre { font-family: var(--mono); }
+code { font-size: 0.9em; overflow-wrap: anywhere; }
+pre {
+  margin: 1rem 0;
+  padding: 0.9rem 1rem;
+  overflow-x: auto;
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  font-size: 0.8125rem;
+  line-height: 1.55;
+  tab-size: 4;
+}
+pre code { font-size: inherit; overflow-wrap: normal; }
+
+header { margin-bottom: 1.75rem; }
+.nb { white-space: nowrap; }
+.tagline { margin: 0.5rem 0 0; color: var(--muted); font-size: 1.2rem; line-height: 1.4; }
+.stream { display: block; width: 100%; max-width: 17.5rem; height: 0.625rem; margin-top: 1.25rem; }
+.stream .cut { fill: none; stroke: var(--rule); }
+.stream .rec { fill: var(--muted); opacity: 0.45; }
+.stream .tail { fill: var(--accent); }
+
+.note {
+  margin: 1.5rem 0;
+  padding: 0.75rem 1rem;
+  background: var(--note-bg);
+  border: 1px solid var(--note-edge);
+  border-radius: 4px;
+  color: var(--note-fg);
+}
+.note a { color: inherit; }
+
+.ideas { display: grid; grid-template-columns: 10.5rem 1fr; gap: 0.9rem 1.25rem; margin: 1rem 0; }
+.ideas dt { font-weight: 650; }
+.ideas dd { margin: 0; min-width: 0; }
+@media (max-width: 36rem) {
+  h1 { font-size: 2.1rem; }
+  .ideas { grid-template-columns: 1fr; gap: 0.1rem; }
+  .ideas dd { margin-bottom: 0.8rem; }
+}
+
+footer {
+  margin-top: 3.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--rule);
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+footer p { margin: 0.4rem 0; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Page not found</h1>
+  <p class="tagline">There is no page at this address.</p>
+</header>
+
+<main>
+  <p>bergdb.org is one page. <a href="/">Go to the start page of BergDB</a>.</p>
+</main>
+
+<footer>
+  <p>© 2013–2026 Frans Lundberg.</p>
+</footer>
+
+</body>
+</html>
