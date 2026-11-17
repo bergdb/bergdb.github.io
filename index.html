@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>BergDB: an embedded, append-only database for Java</title>
-<meta name="description" content="BergDB is an embedded, append-only key-value database for Java. It keeps every transaction in one stream of files and can read the database as it was at an earlier time. A preview, not for production.">
+<meta name="description" content="BergDB is an embedded, append-only database for Java. It keeps every transaction in one stream of files and can read the database as it was at an earlier time.">
 <meta name="color-scheme" content="light dark">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%231b5a86'/%3E%3Crect x='2.5' y='6' width='3' height='4' fill='%23fff' opacity='.55'/%3E%3Crect x='6.5' y='6' width='3' height='4' fill='%23fff' opacity='.8'/%3E%3Crect x='10.5' y='6' width='3' height='4' fill='%23fff'/%3E%3C/svg%3E">
 <style>
 /* Layout: one left-aligned column of about 70 characters, centred on a wide
-   screen. The preview note is the only boxed text; code scrolls in its own box. */
+   screen. The status note is the only boxed text; code scrolls in its own box. */
 :root {
   --bg: #fbfcfd;
   --fg: #18212d;
@@ -146,9 +146,9 @@ footer p { margin: 0.4rem 0; }
   append-only stream of files, and lets you read the database as it was at
   an earlier time.</p>
 
-  <p class="note"><strong>BergDB is a preview. Do not use it in
-  production.</strong> There is no promise about the stream format or the
-  API until a stable release. See <a href="#status">the status</a>.</p>
+  <p class="note">BergDB has been tested thoroughly, release by release.
+  The API and the stored format will likely change before a stable
+  release. See <a href="#status">the status</a>.</p>
 
   <section id="ideas" aria-labelledby="ideas-h">
     <h2 id="ideas-h">Main ideas</h2>
@@ -185,23 +185,43 @@ footer p { margin: 0.4rem 0; }
   </section>
 
   <section id="status" aria-labelledby="status-h">
-    <h2 id="status-h">Status: a preview</h2>
-    <p>BergDB is a preview. Do not use it in production.</p>
+    <h2 id="status-h">Status</h2>
+    <p>BergDB has been tested thoroughly, release by release. Whether that
+    is enough for your use is yours to judge: the code, the tests and each
+    release's test results are all in
+    <a href="https://github.com/bergdb/bergdb">the repository</a>.</p>
+    <p>How the latest release, 2026.5 (<span class="nb">2026-11-13</span>,
+    tag <code>release-2026.5</code>), was tested on its release commit:</p>
     <ul>
-      <li>There is no promise about the stream format or the API until a
-      stable release. A database made by one release may not open in the
-      next: release 2026.5 refuses the databases of 2026.4 and earlier.
-      There is no upgrade tool; read the data with the old release and put
-      it with the new one.</li>
-      <li>The latest release is 2026.5, of <span class="nb">2026-11-13</span>. The
-      <code>main</code> branch moves ahead of it.</li>
-      <li>It is tested on JDK 17 and 27, on macOS and Linux, and on an
-      Android emulator, not on a phone.</li>
-      <li>There is no replication and no encryption. The README in
-      <a href="https://github.com/bergdb/bergdb">the repository</a> lists
-      the known issues and limits that a user meets first; the release's
-      notes have the full list.</li>
+      <li>1,700 unit tests, 89 functional tests and 26 longer tests, all
+      passed, on macOS with JDK 27 and on Linux with JDK 17 and 27; the
+      unit tests also on an Android emulator.</li>
+      <li>A thousand kills of a process in the middle of its writes, each
+      followed by a restart that checks every transaction for lost or
+      changed data; power-loss tests of the stream's files on Linux.</li>
+      <li>Fuzz tests of the API and of the index, concurrency tests with
+      jcstress, and Java's index checked, transaction by transaction,
+      against an independent model of the algorithm on generated
+      workloads.</li>
+      <li>Programs written against the public API alone, as a user writes
+      them.</li>
+      <li>Most of it in one seven-hour run; the
+      <a href="https://github.com/bergdb/bergdb/blob/main/releases/2026.5/readme.md">release notes</a>,
+      section "Verification", list each step and its result.</li>
     </ul>
+    <p>No bug is known in 2026.5. The API and the stored format will likely
+    change before a stable release: a database made by one release may not
+    open in the next (2026.5 refuses those of 2026.4 and earlier). There is
+    no upgrade tool; read the data with the old release and put it with the
+    new one. The <code>main</code> branch moves ahead of the latest
+    release.</p>
+    <p><strong>Known issues.</strong> No bug is known in release 2026.5. Two
+    things to plan for: the API may change between releases, and the stream
+    format may change between releases.</p>
+    <p><strong>Limits.</strong> A key is at most 111 bytes, a value at most
+    8&nbsp;MiB, a transaction at most 500 operations and 32&nbsp;MiB; a call
+    over a limit throws and writes nothing. The release notes, "Known issues
+    and limits", give the rest.</p>
   </section>
 
   <section id="get" aria-labelledby="get-h">
