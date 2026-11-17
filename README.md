@@ -21,8 +21,13 @@ Files
   organisation's avatar. Vector copies made from bergdb.com's
   `logo-200.png` (2014) and the font's outlines; `logo-dark.svg` has
   light letters for dark mode.
-* `favicon.svg`, `favicon.ico`, `apple-touch-icon.png`: the purple dot,
-  as bergdb.com's favicon.
+* The favicon set, the purple dot (#94c) as bergdb.com's favicon:
+  `favicon.svg`; `favicon.ico` (16, 32 and 48 px); `favicon-32.png`;
+  `apple-touch-icon.png` (180 px, the dot on white); `icon-192.png` and
+  `icon-512.png` for `site.webmanifest` (name, icons, theme colour).
+  `index.html` and `404.html` link the SVG, the 32 px PNG, the
+  apple-touch-icon and the manifest; browsers find `favicon.ico` by
+  themselves.
 * `CNAME`: the custom domain, one line. GitHub Pages reads it; do not
   remove it.
 * `.nojekyll`: empty. It tells GitHub Pages to serve the files as they
