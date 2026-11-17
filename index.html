@@ -164,9 +164,17 @@ footer p { margin: 0.4rem 0; }
       <dt>History</dt>
       <dd>A read can be made at any time that is still kept, and sees the
       database as it was then, its indexes included.</dd>
-      <dt>Larger than memory</dt>
-      <dd>Eviction keeps the database within a memory budget, and reclaim
-      cuts the front of the stream when a finite retention allows it.</dd>
+      <dt>Code only</dt>
+      <dd>Java code is all that is needed, for the advanced features too: a
+      transaction is a Java method, an index is made by a call, and a query
+      is a loop over Java objects. No query language and no schema
+      files.</dd>
+      <dt>Features</dt>
+      <dd>Atomic transactions, written in Java code only. Scans of the keys
+      of a directory and of an index, forward and backward. Secondary
+      indexes on the fields of stored objects, and compound ones, on up to
+      8 fields. Historic queries with every feature of the queries at the
+      current time.</dd>
       <dt>Small</dt>
       <dd>One jar with no dependencies beyond the JDK. No server, few
       settings.</dd>
@@ -243,10 +251,86 @@ public class Hello {
 <pre><code>javac -cp bergdb-2026.5.jar Hello.java
 java -cp bergdb-2026.5.jar:. Hello</code></pre>
     <p><code>create</code> makes a new database in a new or empty
-    directory; <code>open</code> opens an existing one. The API is the
-    packages <code>bergdb.pub</code> and <code>bergdb.pub.util</code>. The
-    README in <a href="https://github.com/bergdb/bergdb">the repository</a>
-    says what a running database needs and where more examples are.</p>
+    directory; <code>open</code> opens an existing one.</p>
+    <p>Stored Java objects, a transaction, an index and a query of the
+    past, in <code>Accounts.java</code>:</p>
+<pre><code>import bergdb.pub.*;
+
+public class Accounts {
+    // a plain Java class
+    public static class Account {
+        public String owner;
+        public long balance;
+        public Account() {}
+        public Account(String o, long b) { owner = o; balance = b; }
+    }
+
+    public static void main(String[] args) {
+        try (Database db = Factory.database().memory().start()) {
+            Connection c = db.connection();
+
+            // a secondary index
+            db.indexBuilder("by-balance").dir("/acc/")
+                    .type("long").field("balance").start().join();
+
+            c.put("/acc/1001", new Account("Ann", 100));
+            c.put("/acc/1002", new Account("Bob", 20));
+            c.put("/acc/1003", new Account("Cecilia", 60));
+            Time before = c.currentTime();
+
+            // a transaction: Ann pays Bob 30
+            c.rw(env -&gt; {
+                Account from = env.get("/acc/1001", Account.class);
+                Account to = env.get("/acc/1002", Account.class);
+                from.balance -= 30;
+                to.balance += 30;
+                env.put("/acc/1001", from);
+                env.put("/acc/1002", to);
+            });
+
+            // in key order
+            for (Account a : c.usePrimary(Account.class).dir("/acc/")
+                    .objects()) {
+                System.out.println(a.owner + " " + a.balance);
+            }
+
+            // by balance: 50 or more, largest first
+            for (Account a : c.useIndex("by-balance", Account.class)
+                    .from(50, true).backward().objects()) {
+                System.out.println("50 or more: " + a.owner + " " + a.balance);
+            }
+
+            // the same query, in the past
+            c.setLookupTime(before);
+            for (Account a : c.useIndex("by-balance", Account.class)
+                    .from(50, true).backward().objects()) {
+                System.out.println("50 or more, before: " + a.owner + " "
+                        + a.balance);
+            }
+        }
+    }
+}</code></pre>
+    <p>Compiled and run as <code>Hello</code>, it prints:</p>
+<pre><code>Ann 70
+Bob 50
+Cecilia 60
+50 or more: Ann 70
+50 or more: Cecilia 60
+50 or more: Bob 50
+50 or more, before: Ann 100
+50 or more, before: Cecilia 60</code></pre>
+    <p><code>Account</code> is an ordinary class with public fields and a
+    public no-argument constructor: a put stores the object, and a get or
+    a scan gives it back as an <code>Account</code>. <code>rw</code> runs
+    its action as one atomic transaction: both puts are made, or neither,
+    and if another transaction changes what the action has read, the
+    action runs again. <code>memory()</code> gives a database in memory,
+    gone when it closes; <code>create</code>, as above, keeps one in a
+    directory.</p>
+    <p>The API is the packages <code>bergdb.pub</code> and
+    <code>bergdb.pub.util</code>. The README in
+    <a href="https://github.com/bergdb/bergdb">the repository</a> says
+    what a running database needs and where more examples are.</p>
   </section>
 
   <section id="links" aria-labelledby="links-h">
