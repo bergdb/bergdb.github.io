@@ -250,8 +250,9 @@ public class Hello {
     <p>Compile and run it with the release's jar beside it:</p>
 <pre><code>javac -cp bergdb-2026.5.jar Hello.java
 java -cp bergdb-2026.5.jar:. Hello</code></pre>
-    <p><code>create</code> makes a new database in a new or empty
-    directory; <code>open</code> opens an existing one.</p>
+    <p><code>create</code> opens the database in the directory, or makes a
+    new one if there is none; <code>open</code> only opens an existing one
+    and never makes one.</p>
     <p>Stored Java objects, a transaction, an index and a query of the
     past, in <code>Accounts.java</code>:</p>
 <pre><code>import bergdb.pub.*;
