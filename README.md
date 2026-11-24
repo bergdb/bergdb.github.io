@@ -42,6 +42,11 @@ mode, and at a phone's width), commit to `main` and push. GitHub Pages
 publishes the new commit by itself.
 
 * After a change of the CSS, copy the `<style>` block to `404.html`.
+* The Java examples are coloured by spans in the HTML, with no
+  JavaScript: after a change of an example, run `python3 -I
+  tools/highlight.py index.html`. It marks keywords, types, strings,
+  numbers and comments; their colours are the `--code-*` variables of the
+  CSS. A second run changes nothing.
 * At a release of BergDB, change the release's number, date and tag
   under "Status" and "Get it", and the jar's name under "Try it".
 * The page's facts come from BergDB's `README.md` and its release notes.

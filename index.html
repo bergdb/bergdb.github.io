@@ -23,6 +23,13 @@
   --note-bg: #fff5d6;
   --note-edge: #b98a12;
   --note-fg: #3a2e06;
+  --purple: #94c;
+  --link-hover-bg: #ebdff5;
+  --code-k: #8a2bb9;
+  --code-t: #0b5f8a;
+  --code-s: #18753a;
+  --code-n: #b04a00;
+  --code-c: #6b7682;
   --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
 }
@@ -37,6 +44,13 @@
     --note-bg: #2a2410;
     --note-edge: #a8821f;
     --note-fg: #f1e3b4;
+    --purple: #b779e0;
+    --link-hover-bg: #3a2450;
+    --code-k: #d19af0;
+    --code-t: #7fc3f0;
+    --code-s: #8fd6a0;
+    --code-n: #f2a86b;
+    --code-c: #8f9aa8;
   }
 }
 
@@ -50,7 +64,7 @@ html {
 body {
   margin: 0 auto;
   max-width: 48rem;
-  padding-block: 3rem 2rem;
+  padding-block: 4.25rem 2rem;
   padding-left: max(16px, env(safe-area-inset-left, 0px));
   padding-right: max(16px, env(safe-area-inset-right, 0px));
   background: var(--bg);
@@ -73,9 +87,25 @@ p { margin: 0.75rem 0; }
 ul { margin: 0.75rem 0; padding-left: 1.25rem; }
 li { margin: 0.4rem 0; }
 
-a { color: var(--accent); text-decoration: underline; text-underline-offset: 0.15em; }
-a:hover { text-decoration-thickness: 2px; }
-a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 2px; }
+/* Links: the text's own colour, underlined; on hover a tint of the logo's purple. */
+a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: 0.08em;
+  text-decoration-color: currentColor;
+  text-underline-offset: 0.18em;
+  padding: 0.05em 0.15em;
+  margin: 0 -0.15em;
+  border-radius: 3px;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  transition: background-color 0.15s ease, text-decoration-color 0.15s ease;
+}
+a:hover {
+  background-color: var(--link-hover-bg);
+  text-decoration-color: var(--purple);
+}
+a:focus-visible { outline: 2px solid var(--purple); outline-offset: 1px; }
 
 code, pre { font-family: var(--mono); }
 code { font-size: 0.9em; overflow-wrap: anywhere; }
@@ -91,6 +121,12 @@ pre {
   tab-size: 4;
 }
 pre code { font-size: inherit; overflow-wrap: normal; }
+/* Highlighting of the Java examples (tools/highlight.py). */
+pre .k { color: var(--code-k); font-weight: 600; }
+pre .t { color: var(--code-t); }
+pre .s { color: var(--code-s); }
+pre .n { color: var(--code-n); }
+pre .c { color: var(--code-c); font-style: italic; }
 
 header { margin-bottom: 1.75rem; }
 .nb { white-space: nowrap; }
@@ -185,7 +221,7 @@ footer p { margin: 0.4rem 0; }
       <a href="https://github.com/bergdb/bergdb/releases/tag/release-2026.6"><code>release-2026.6</code></a>.</li>
       <li><strong>The source.</strong>
       <a href="https://github.com/bergdb/bergdb">github.com/bergdb/bergdb</a>.
-      With a JDK 17 or later and a Unix shell (macOS or Linux),
+      With a JDK 17 or later,
       <code>java/build.sh</code> builds the jar,
       <code>java/build/bergdb-release.jar</code>.</li>
     </ul>
@@ -195,26 +231,26 @@ footer p { margin: 0.4rem 0; }
     <h2 id="try-h">Try it</h2>
     <p>You need a JDK 17 or later and the jar. A first program,
     <code>Hello.java</code>:</p>
-<pre><code>import bergdb.pub.Connection;
-import bergdb.pub.Database;
-import bergdb.pub.Factory;
-import bergdb.pub.Time;
+<pre><code><span class="k">import</span> bergdb.pub.<span class="t">Connection</span>;
+<span class="k">import</span> bergdb.pub.<span class="t">Database</span>;
+<span class="k">import</span> bergdb.pub.<span class="t">Factory</span>;
+<span class="k">import</span> bergdb.pub.<span class="t">Time</span>;
 
-public class Hello {
-    public static void main(String[] args) throws Exception {
-        try (Database db = Factory.database().create("hello-db").start()) {
-            Connection c = db.connection();
-            Time first = c.put("/fruit/apple", "red").getTime();
-            c.put("/fruit/apple", "green");
+<span class="k">public</span> <span class="k">class</span> <span class="t">Hello</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="t">String</span>[] args) <span class="k">throws</span> <span class="t">Exception</span> {
+        <span class="k">try</span> (<span class="t">Database</span> db = <span class="t">Factory</span>.database().create(<span class="s">"hello-db"</span>).start()) {
+            <span class="t">Connection</span> c = db.connection();
+            <span class="t">Time</span> first = c.put(<span class="s">"/fruit/apple"</span>, <span class="s">"red"</span>).getTime();
+            c.put(<span class="s">"/fruit/apple"</span>, <span class="s">"green"</span>);
 
-            // prints green
-            System.out.println(c.get("/fruit/apple", String.class));
+            <span class="c">// prints green</span>
+            <span class="t">System</span>.out.println(c.get(<span class="s">"/fruit/apple"</span>, <span class="t">String</span>.<span class="k">class</span>));
 
-            // read the past: prints red
+            <span class="c">// read the past: prints red</span>
             c.setLookupTime(first);
-            System.out.println(c.get("/fruit/apple", String.class));
+            <span class="t">System</span>.out.println(c.get(<span class="s">"/fruit/apple"</span>, <span class="t">String</span>.<span class="k">class</span>));
 
-            // wait until durable
+            <span class="c">// wait until durable</span>
             c.sync();
         }
     }
@@ -227,57 +263,57 @@ java -cp bergdb-2026.6.jar:. Hello</code></pre>
     and never makes one.</p>
     <p>Stored Java objects, a transaction, an index and a query of the
     past, in <code>Accounts.java</code>:</p>
-<pre><code>import bergdb.pub.*;
+<pre><code><span class="k">import</span> bergdb.pub.*;
 
-public class Accounts {
-    // a plain Java class
-    public static class Account {
-        public String owner;
-        public long balance;
-        public Account() {}
-        public Account(String o, long b) { owner = o; balance = b; }
+<span class="k">public</span> <span class="k">class</span> <span class="t">Accounts</span> {
+    <span class="c">// a plain Java class</span>
+    <span class="k">public</span> <span class="k">static</span> <span class="k">class</span> <span class="t">Account</span> {
+        <span class="k">public</span> <span class="t">String</span> owner;
+        <span class="k">public</span> <span class="k">long</span> balance;
+        <span class="k">public</span> <span class="t">Account</span>() {}
+        <span class="k">public</span> <span class="t">Account</span>(<span class="t">String</span> o, <span class="k">long</span> b) { owner = o; balance = b; }
     }
 
-    public static void main(String[] args) {
-        try (Database db = Factory.database().memory().start()) {
-            Connection c = db.connection();
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="t">String</span>[] args) {
+        <span class="k">try</span> (<span class="t">Database</span> db = <span class="t">Factory</span>.database().memory().start()) {
+            <span class="t">Connection</span> c = db.connection();
 
-            // a secondary index
-            db.indexBuilder("by-balance").dir("/acc/")
-                    .type("long").field("balance").start().join();
+            <span class="c">// a secondary index</span>
+            db.indexBuilder(<span class="s">"by-balance"</span>).dir(<span class="s">"/acc/"</span>)
+                    .type(<span class="s">"long"</span>).field(<span class="s">"balance"</span>).start().join();
 
-            c.put("/acc/1001", new Account("Ann", 100));
-            c.put("/acc/1002", new Account("Bob", 20));
-            c.put("/acc/1003", new Account("Cecilia", 60));
-            Time before = c.currentTime();
+            c.put(<span class="s">"/acc/1001"</span>, <span class="k">new</span> <span class="t">Account</span>(<span class="s">"Ann"</span>, <span class="n">100</span>));
+            c.put(<span class="s">"/acc/1002"</span>, <span class="k">new</span> <span class="t">Account</span>(<span class="s">"Bob"</span>, <span class="n">20</span>));
+            c.put(<span class="s">"/acc/1003"</span>, <span class="k">new</span> <span class="t">Account</span>(<span class="s">"Cecilia"</span>, <span class="n">60</span>));
+            <span class="t">Time</span> before = c.currentTime();
 
-            // a transaction: Ann pays Bob 30
+            <span class="c">// a transaction: Ann pays Bob 30</span>
             c.rw(env -&gt; {
-                Account from = env.get("/acc/1001", Account.class);
-                Account to = env.get("/acc/1002", Account.class);
-                from.balance -= 30;
-                to.balance += 30;
-                env.put("/acc/1001", from);
-                env.put("/acc/1002", to);
+                <span class="t">Account</span> from = env.get(<span class="s">"/acc/1001"</span>, <span class="t">Account</span>.<span class="k">class</span>);
+                <span class="t">Account</span> to = env.get(<span class="s">"/acc/1002"</span>, <span class="t">Account</span>.<span class="k">class</span>);
+                from.balance -= <span class="n">30</span>;
+                to.balance += <span class="n">30</span>;
+                env.put(<span class="s">"/acc/1001"</span>, from);
+                env.put(<span class="s">"/acc/1002"</span>, to);
             });
 
-            // in key order
-            for (Account a : c.usePrimary(Account.class).dir("/acc/")
+            <span class="c">// in key order</span>
+            <span class="k">for</span> (<span class="t">Account</span> a : c.usePrimary(<span class="t">Account</span>.<span class="k">class</span>).dir(<span class="s">"/acc/"</span>)
                     .objects()) {
-                System.out.println(a.owner + " " + a.balance);
+                <span class="t">System</span>.out.println(a.owner + <span class="s">" "</span> + a.balance);
             }
 
-            // by balance: 50 or more, largest first
-            for (Account a : c.useIndex("by-balance", Account.class)
-                    .from(50, true).backward().objects()) {
-                System.out.println("50 or more: " + a.owner + " " + a.balance);
+            <span class="c">// by balance: 50 or more, largest first</span>
+            <span class="k">for</span> (<span class="t">Account</span> a : c.useIndex(<span class="s">"by-balance"</span>, <span class="t">Account</span>.<span class="k">class</span>)
+                    .from(<span class="n">50</span>, <span class="k">true</span>).backward().objects()) {
+                <span class="t">System</span>.out.println(<span class="s">"50 or more: "</span> + a.owner + <span class="s">" "</span> + a.balance);
             }
 
-            // the same query, in the past
+            <span class="c">// the same query, in the past</span>
             c.setLookupTime(before);
-            for (Account a : c.useIndex("by-balance", Account.class)
-                    .from(50, true).backward().objects()) {
-                System.out.println("50 or more, before: " + a.owner + " "
+            <span class="k">for</span> (<span class="t">Account</span> a : c.useIndex(<span class="s">"by-balance"</span>, <span class="t">Account</span>.<span class="k">class</span>)
+                    .from(<span class="n">50</span>, <span class="k">true</span>).backward().objects()) {
+                <span class="t">System</span>.out.println(<span class="s">"50 or more, before: "</span> + a.owner + <span class="s">" "</span>
                         + a.balance);
             }
         }

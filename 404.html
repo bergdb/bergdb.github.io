@@ -13,7 +13,7 @@
 <link rel="manifest" href="/site.webmanifest">
 <style>
 /* Layout: one left-aligned column of about 70 characters, centred on a wide
-   screen. The preview note is the only boxed text; code scrolls in its own box. */
+   screen. The status note is the only boxed text; code scrolls in its own box. */
 :root {
   --bg: #fbfcfd;
   --fg: #18212d;
@@ -24,6 +24,13 @@
   --note-bg: #fff5d6;
   --note-edge: #b98a12;
   --note-fg: #3a2e06;
+  --purple: #94c;
+  --link-hover-bg: #ebdff5;
+  --code-k: #8a2bb9;
+  --code-t: #0b5f8a;
+  --code-s: #18753a;
+  --code-n: #b04a00;
+  --code-c: #6b7682;
   --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
 }
@@ -38,6 +45,13 @@
     --note-bg: #2a2410;
     --note-edge: #a8821f;
     --note-fg: #f1e3b4;
+    --purple: #b779e0;
+    --link-hover-bg: #3a2450;
+    --code-k: #d19af0;
+    --code-t: #7fc3f0;
+    --code-s: #8fd6a0;
+    --code-n: #f2a86b;
+    --code-c: #8f9aa8;
   }
 }
 
@@ -51,7 +65,7 @@ html {
 body {
   margin: 0 auto;
   max-width: 48rem;
-  padding-block: 3rem 2rem;
+  padding-block: 4.25rem 2rem;
   padding-left: max(16px, env(safe-area-inset-left, 0px));
   padding-right: max(16px, env(safe-area-inset-right, 0px));
   background: var(--bg);
@@ -74,9 +88,25 @@ p { margin: 0.75rem 0; }
 ul { margin: 0.75rem 0; padding-left: 1.25rem; }
 li { margin: 0.4rem 0; }
 
-a { color: var(--accent); text-decoration: underline; text-underline-offset: 0.15em; }
-a:hover { text-decoration-thickness: 2px; }
-a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 2px; }
+/* Links: the text's own colour, underlined; on hover a tint of the logo's purple. */
+a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: 0.08em;
+  text-decoration-color: currentColor;
+  text-underline-offset: 0.18em;
+  padding: 0.05em 0.15em;
+  margin: 0 -0.15em;
+  border-radius: 3px;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  transition: background-color 0.15s ease, text-decoration-color 0.15s ease;
+}
+a:hover {
+  background-color: var(--link-hover-bg);
+  text-decoration-color: var(--purple);
+}
+a:focus-visible { outline: 2px solid var(--purple); outline-offset: 1px; }
 
 code, pre { font-family: var(--mono); }
 code { font-size: 0.9em; overflow-wrap: anywhere; }
@@ -92,6 +122,12 @@ pre {
   tab-size: 4;
 }
 pre code { font-size: inherit; overflow-wrap: normal; }
+/* Highlighting of the Java examples (tools/highlight.py). */
+pre .k { color: var(--code-k); font-weight: 600; }
+pre .t { color: var(--code-t); }
+pre .s { color: var(--code-s); }
+pre .n { color: var(--code-n); }
+pre .c { color: var(--code-c); font-style: italic; }
 
 header { margin-bottom: 1.75rem; }
 .nb { white-space: nowrap; }
