@@ -136,19 +136,17 @@ footer p { margin: 0.4rem 0; }
 <main>
   <p>BergDB runs inside your Java process, keeps every transaction in one
   append-only stream of files, and lets you read the database as it was at
-  an earlier time.</p>
+  an earlier time. A value can be any byte array, a Java object, or a
+  schemaless document.</p>
 
   <section id="ideas" aria-labelledby="ideas-h">
     <h2 id="ideas-h">Main ideas</h2>
     <dl class="ideas">
       <dt>One stream</dt>
-      <dd>The stream is the only durable storage: no write-ahead log and no
-      separate index files. Data, index and history are all records in the
-      stream.</dd>
-      <dt>Self-indexed</dt>
-      <dd>Index nodes are written into the stream lazily, as the writes go
-      on. A start reads only the tail of the stream, so the time to open a
-      database does not grow with its size.</dd>
+      <dd>Data, index and history are all records in the stream: no
+      write-ahead log, no index files. The same transactions in the same
+      order give the same bytes. A start reads only the stream's tail, so
+      the time to open a database does not grow with its size.</dd>
       <dt>History</dt>
       <dd>A read can be made at any time that is still kept, and sees the
       database as it was then, its indexes included.</dd>
@@ -166,46 +164,15 @@ footer p { margin: 0.4rem 0; }
       <dt>Small</dt>
       <dd>One jar with no dependencies beyond the JDK. No server, few
       settings.</dd>
+      <dt>Proven algorithms</dt>
+      <dd>BergDB's core algorithms are proved in Lean. Every transaction is
+      applied whole, and every read, at the latest time or an earlier one,
+      sees the database as it was then, also after a crash and while data
+      is evicted from cache memory.</dd>
     </dl>
-    <p>The Core is a key-value store of byte arrays. The Pub API on top of
-    it stores strings, byte arrays and objects under path-like keys, with
+    <p>The Core is a key-value store of byte arrays; the Pub API on top of
+    it adds the Java objects and documents, the path-like keys and the
     secondary indexes.</p>
-  </section>
-
-  <section id="status" aria-labelledby="status-h">
-    <h2 id="status-h">Status</h2>
-    <p>BergDB has been tested thoroughly, release by release. Whether that
-    is enough for your use is yours to judge: the code, the tests and each
-    release's test results are all in
-    <a href="https://github.com/bergdb/bergdb">the repository</a>.</p>
-    <p>How the latest release, 2026.5 (<span class="nb">2026-11-13</span>,
-    tag <code>release-2026.5</code>), was tested on its release commit:</p>
-    <ul>
-      <li>1,700 unit tests, 89 functional tests and 26 longer tests, all
-      passed, on macOS with JDK 27 and on Linux with JDK 17 and 27; the
-      unit tests also on an Android emulator.</li>
-      <li>A thousand kills of a process in the middle of its writes, each
-      followed by a restart that checks every transaction for lost or
-      changed data; power-loss tests of the stream's files on Linux.</li>
-      <li>Fuzz tests of the API and of the index, concurrency tests with
-      jcstress, and Java's index checked, transaction by transaction,
-      against an independent model of the algorithm on generated
-      workloads.</li>
-      <li>Programs written against the public API alone, as a user writes
-      them.</li>
-      <li>Most of it in one seven-hour run; the
-      <a href="https://github.com/bergdb/bergdb/blob/main/releases/2026.5/readme.md">release notes</a>,
-      section "Verification", list each step and its result.</li>
-    </ul>
-    <p>No bug is known in 2026.5. The API and the stored format will likely
-    change before a stable release: a database made by one release may not
-    open in the next (2026.5 refuses those of 2026.4 and earlier). There is
-    no upgrade tool; read the data with the old release and put it with the
-    new one. The <code>main</code> branch moves ahead of the latest
-    release.</p>
-    <p><strong>Known issues.</strong> No bug is known in release 2026.5. Two
-    things to plan for: the API may change between releases, and the stream
-    format may change between releases.</p>
   </section>
 
   <section id="get" aria-labelledby="get-h">
@@ -214,7 +181,8 @@ footer p { margin: 0.4rem 0; }
       <li><strong>The latest release.</strong> Each release's jar and the
       Javadoc of its API are on
       <a href="https://github.com/bergdb/bergdb/releases">GitHub Releases</a>,
-      under the release's tag. The latest is <code>release-2026.5</code>.</li>
+      under the release's tag. The latest is
+      <a href="https://github.com/bergdb/bergdb/releases/tag/release-2026.6"><code>release-2026.6</code></a>.</li>
       <li><strong>The source.</strong>
       <a href="https://github.com/bergdb/bergdb">github.com/bergdb/bergdb</a>.
       With a JDK 17 or later and a Unix shell (macOS or Linux),
@@ -252,8 +220,8 @@ public class Hello {
     }
 }</code></pre>
     <p>Compile and run it with the release's jar beside it:</p>
-<pre><code>javac -cp bergdb-2026.5.jar Hello.java
-java -cp bergdb-2026.5.jar:. Hello</code></pre>
+<pre><code>javac -cp bergdb-2026.6.jar Hello.java
+java -cp bergdb-2026.6.jar:. Hello</code></pre>
     <p><code>create</code> opens the database in the directory, or makes a
     new one if there is none; <code>open</code> only opens an existing one
     and never makes one.</p>
@@ -315,7 +283,7 @@ public class Accounts {
         }
     }
 }</code></pre>
-    <p>Compiled and run as <code>Hello</code>, it prints:</p>
+    <p>Compiled and run like <code>Hello</code>, it prints:</p>
 <pre><code>Ann 70
 Bob 50
 Cecilia 60
@@ -329,13 +297,78 @@ Cecilia 60
     a scan gives it back as an <code>Account</code>. <code>rw</code> runs
     its action as one atomic transaction: both puts are made, or neither,
     and if another transaction changes what the action has read, the
-    action runs again. <code>memory()</code> gives a database in memory,
+    action runs again. The index is kept as the data changes, in the same
+    transactions. <code>memory()</code> gives a database in memory,
     gone when it closes; <code>create</code>, as above, keeps one in a
     directory.</p>
     <p>The API is the packages <code>bergdb.pub</code> and
     <code>bergdb.pub.util</code>. The README in
     <a href="https://github.com/bergdb/bergdb">the repository</a> says
     what a running database needs and where more examples are.</p>
+  </section>
+
+  <section id="status" aria-labelledby="status-h">
+    <h2 id="status-h">Status</h2>
+    <p>BergDB has been tested thoroughly, release by release. Whether that
+    is enough for your use is yours to judge: the code, the tests and each
+    release's test results are all in
+    <a href="https://github.com/bergdb/bergdb">the repository</a>.</p>
+    <p>How the latest release, 2026.6 (<span class="nb">2026-11-24</span>,
+    tag <code>release-2026.6</code>), was tested, on commits near its
+    release commit:</p>
+    <ul>
+      <li>1,738 unit tests, 89 functional tests and 26 longer tests, all
+      passed, on macOS with JDK 27; the unit tests also on an Android
+      emulator.</li>
+      <li>Thousands of kills of a process in the middle of its writes, each
+      followed by a restart that checks every transaction for lost or
+      changed data; crash and power-loss tests of the stream's files.</li>
+      <li>Java's index and reclaim's steps checked, transaction by
+      transaction, against the Lean model, on generated workloads with new
+      seeds each day and on the workloads of the user programs below;
+      Java's own quick, partial check of the writer's contract after every
+      commit of the unit tests and of the user programs' longer runs (4.3
+      million commits).</li>
+      <li>Programs written against the public API alone, as a user writes
+      them, with their own checks of what they read, also under forced
+      stops: eight new ones for this release.</li>
+      <li>Fuzz tests of the API and of the index, and a run at 10 million
+      keys with reclaim: 100 million transactions.</li>
+      <li>The runs: <code>java/night.sh</code> (3 hours) on
+      <code>main</code> of <span class="nb">2026-11-23</span>, with every
+      change of the release; <code>java/night.sh</code> and
+      <code>java/week.sh</code> (8 hours) on 2026-11-20 and 21;
+      <code>java/timing.sh</code> against 2026.5. The Java code a user runs
+      did not change after them, but for one comment and the version
+      number. The
+      <a href="https://github.com/bergdb/bergdb/blob/main/releases/2026.6/readme.md">release notes</a>,
+      section "Verification", list each run and its result.</li>
+    </ul>
+    <p>No bug is known in 2026.6; it fixes the three found in 2026.5
+    (RB-001 to RB-003, item 033). The API and the stored format will likely
+    change before a stable release: a database made by one release may not
+    open in the next (2026.6 refuses those of 2026.5 and earlier). There is
+    no upgrade tool; read the data with the old release and put it with the
+    new one. The <code>main</code> branch moves ahead of the latest
+    release.</p>
+    <p>BergDB's core algorithms are proved. The writer, reads at the latest
+    and at every earlier time, crash recovery, restarts, eviction and
+    reclaim's cuts are proved in Lean, a language whose checker verifies
+    every step of a proof, for a model of BergDB's Core layer in
+    <code>lean/</code>. The proofs rest on assumptions that are tested
+    instead, among them that Java does what the model does, which the tests
+    check transaction by transaction; the Pub layer, threads and the costs
+    are outside the model. This holds for release 2026.6 and the code on
+    <code>main</code> since 2026-11-19, not for release 2026.5 and earlier,
+    whose writer is older.
+    <a href="https://github.com/bergdb/bergdb/blob/main/items/030-proofs/26-core-algorithms-proved.md">Item 030-26</a>
+    says what is proved and what is not;
+    <a href="https://github.com/bergdb/bergdb/blob/main/items/030-proofs/38-guarantees.md">item 030-38</a>
+    lists what it gives a user, each guarantee proved or tested on
+    purpose.</p>
+    <p><strong>Known issues.</strong> No bug is known in release 2026.6. Two
+    things to plan for: the API may change between releases, and the stream
+    format may change between releases.</p>
   </section>
 
   <section id="links" aria-labelledby="links-h">
