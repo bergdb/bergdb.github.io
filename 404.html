@@ -12,8 +12,8 @@
 <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2">
 <link rel="manifest" href="/site.webmanifest">
 <style>
-/* Layout: one left-aligned column of about 70 characters, centred on a wide
-   screen. The status note is the only boxed text; code scrolls in its own box. */
+/* Layout: one left-aligned column, at most 48rem wide, centred on a wide
+   screen; code scrolls in its own box. */
 :root {
   --bg: #fbfcfd;
   --fg: #18212d;
@@ -21,9 +21,6 @@
   --accent: #1b5a86;
   --rule: #d9e0e8;
   --surface: #f0f3f7;
-  --note-bg: #fff5d6;
-  --note-edge: #b98a12;
-  --note-fg: #3a2e06;
   --purple: #94c;
   --link-hover-bg: #ebdff5;
   --code-k: #8a2bb9;
@@ -42,9 +39,6 @@
     --accent: #86bde6;
     --rule: #2b3440;
     --surface: #1a2029;
-    --note-bg: #2a2410;
-    --note-edge: #a8821f;
-    --note-fg: #f1e3b4;
     --purple: #b779e0;
     --link-hover-bg: #3a2450;
     --code-k: #d19af0;
@@ -78,7 +72,8 @@ body {
 
 h1, h2 { line-height: 1.2; text-wrap: balance; }
 h1 { margin: 0; font-size: 2.5rem; font-weight: 700; letter-spacing: -0.02em; }
-/* The logo of 2013 (bergdb.com): logo.svg, and logo-dark.svg with light letters. */
+/* The logo of 2013 (the former bergdb.com): logo.svg, and logo-dark.svg with
+   light letters. */
 h1 picture, .logo { display: block; }
 .logo { width: auto; height: 2.5rem; }
 .home { display: inline-block; margin-bottom: 1.25rem; }
@@ -132,16 +127,6 @@ pre .c { color: var(--code-c); font-style: italic; }
 header { margin-bottom: 1.75rem; }
 .nb { white-space: nowrap; }
 .tagline { margin: 0.5rem 0 0; color: var(--muted); font-size: 1.2rem; line-height: 1.4; }
-
-.note {
-  margin: 1.5rem 0;
-  padding: 0.75rem 1rem;
-  background: var(--note-bg);
-  border: 1px solid var(--note-edge);
-  border-radius: 4px;
-  color: var(--note-fg);
-}
-.note a { color: inherit; }
 
 .ideas { display: grid; grid-template-columns: 10.5rem 1fr; gap: 0.9rem 1.25rem; margin: 1rem 0; }
 .ideas dt { font-weight: 650; }

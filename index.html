@@ -3,16 +3,16 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>BergDB: an embedded, append-only database for Java</title>
-<meta name="description" content="BergDB is an embedded, append-only database for Java. It keeps every transaction in one stream of files and can read the database as it was at an earlier time.">
+<title>BergDB: an embedded, append-only key-value database for Java</title>
+<meta name="description" content="BergDB is an embedded, append-only key-value database for Java. It keeps every transaction in one stream of files and can read the database as it was at an earlier time.">
 <meta name="color-scheme" content="light dark">
 <link rel="icon" href="favicon-32.png?v=2" type="image/png" sizes="32x32">
 <link rel="icon" href="favicon.svg?v=2" type="image/svg+xml">
 <link rel="apple-touch-icon" href="apple-touch-icon.png?v=2">
 <link rel="manifest" href="site.webmanifest">
 <style>
-/* Layout: one left-aligned column of about 70 characters, centred on a wide
-   screen. The status note is the only boxed text; code scrolls in its own box. */
+/* Layout: one left-aligned column, at most 48rem wide, centred on a wide
+   screen; code scrolls in its own box. */
 :root {
   --bg: #fbfcfd;
   --fg: #18212d;
@@ -20,9 +20,6 @@
   --accent: #1b5a86;
   --rule: #d9e0e8;
   --surface: #f0f3f7;
-  --note-bg: #fff5d6;
-  --note-edge: #b98a12;
-  --note-fg: #3a2e06;
   --purple: #94c;
   --link-hover-bg: #ebdff5;
   --code-k: #8a2bb9;
@@ -41,9 +38,6 @@
     --accent: #86bde6;
     --rule: #2b3440;
     --surface: #1a2029;
-    --note-bg: #2a2410;
-    --note-edge: #a8821f;
-    --note-fg: #f1e3b4;
     --purple: #b779e0;
     --link-hover-bg: #3a2450;
     --code-k: #d19af0;
@@ -77,7 +71,8 @@ body {
 
 h1, h2 { line-height: 1.2; text-wrap: balance; }
 h1 { margin: 0; font-size: 2.5rem; font-weight: 700; letter-spacing: -0.02em; }
-/* The logo of 2013 (bergdb.com): logo.svg, and logo-dark.svg with light letters. */
+/* The logo of 2013 (the former bergdb.com): logo.svg, and logo-dark.svg with
+   light letters. */
 h1 picture, .logo { display: block; }
 .logo { width: auto; height: 2.5rem; }
 .home { display: inline-block; margin-bottom: 1.25rem; }
@@ -131,16 +126,6 @@ pre .c { color: var(--code-c); font-style: italic; }
 header { margin-bottom: 1.75rem; }
 .nb { white-space: nowrap; }
 .tagline { margin: 0.5rem 0 0; color: var(--muted); font-size: 1.2rem; line-height: 1.4; }
-
-.note {
-  margin: 1.5rem 0;
-  padding: 0.75rem 1rem;
-  background: var(--note-bg);
-  border: 1px solid var(--note-edge);
-  border-radius: 4px;
-  color: var(--note-fg);
-}
-.note a { color: inherit; }
 
 .ideas { display: grid; grid-template-columns: 10.5rem 1fr; gap: 0.9rem 1.25rem; margin: 1rem 0; }
 .ideas dt { font-weight: 650; }
@@ -372,7 +357,9 @@ Cecilia 60
       keys with reclaim: 100 million transactions.</li>
       <li>The runs: <code>java/night.sh</code> (3 hours) on
       <code>main</code> of <span class="nb">2026-11-23</span>, with every
-      change of the release; <code>java/night.sh</code> and
+      change of the release's Java code (a change of the trace checker's
+      C-STEP, in Lean, landed after it, through its gate);
+      <code>java/night.sh</code> and
       <code>java/week.sh</code> (8 hours) on 2026-11-20 and 21;
       <code>java/timing.sh</code> against 2026.5. The Java code a user runs
       did not change after them, but for one comment and the version

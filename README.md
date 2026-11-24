@@ -17,16 +17,16 @@ Files
 * `404.html`: the page for an address that does not exist. Its `<style>`
   block is a copy of `index.html`'s.
 * `logo.svg`, `logo-dark.svg`: the BergDB logo of 2013, the purple dot and
-  "BergDB" in Courier 10 Pitch Bold, as on bergdb.com and the GitHub
-  organisation's avatar. Vector copies made from bergdb.com's
-  `logo-200.png` (2014) and the font's outlines; `logo-dark.svg` has
-  light letters for dark mode.
-* The favicon set, the purple dot (#94c) as bergdb.com's favicon:
-  `favicon.svg`; `favicon.ico` (16, 32 and 48 px); `favicon-32.png`;
-  `apple-touch-icon.png` (180 px, the dot on white); `icon-192.png` and
-  `icon-512.png` for `site.webmanifest` (name, icons, theme colour).
-  `index.html` and `404.html` link the SVG, the 32 px PNG, the
-  apple-touch-icon and the manifest; browsers find `favicon.ico` by
+  "BergDB" in Courier 10 Pitch Bold, as on the former bergdb.com and the
+  GitHub organisation's avatar. Vector copies made from the former
+  bergdb.com's `logo-200.png` (2014) and the font's outlines;
+  `logo-dark.svg` has light letters for dark mode.
+* The favicon set, the purple dot (#94c) as the former bergdb.com's
+  favicon: `favicon.svg`; `favicon.ico` (16, 32 and 48 px);
+  `favicon-32.png`; `apple-touch-icon.png` (180 px, the dot on white);
+  `icon-192.png` and `icon-512.png` for `site.webmanifest` (name, icons,
+  theme colour). `index.html` and `404.html` link the SVG, the 32 px PNG,
+  the apple-touch-icon and the manifest; browsers find `favicon.ico` by
   themselves.
 * `CNAME`: the custom domain, one line. GitHub Pages reads it; do not
   remove it.
